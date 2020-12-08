@@ -1,18 +1,23 @@
 import xlwings as xw
 import comtypes.client
 
-# create API helper object
-helper = comtypes.client.CreateObject('SAP2000v1.Helper')
-helper = helper.QueryInterface(comtypes.gen.SAP2000v1.cHelper)
 
-# attach to a running instance of SAP2000
-try:
-    mySAPObject = helper.GetObject("CSI.SAP2000.API.SapObject")
-except (OSError, comtypes.COMError):
-    print("No running instance of the program found or failed to attach.")
+def get_active_sap2000():
+    # create API helper object
+    helper = comtypes.client.CreateObject('SAP2000v1.Helper')
+    helper = helper.QueryInterface(comtypes.gen.SAP2000v1.cHelper)
+
+    # attach to a running instance of SAP2000
+    try:
+        # get the active SapObject
+        return helper.GetObject("CSI.SAP2000.API.SapObject") 
+    except (OSError, comtypes.COMError):
+        print("No running instance of the program found or failed to attach.")
+
+mySapObject = get_active_sap2000()
 
 # create SapModel object
-sapModel = mySAPObject.SapModel
+sapModel = mySapObject.SapModel
 
 # deselect all cases and combos
 ret = sapModel.Results.Setup.DeselectAllCasesAndCombosForOutput()
